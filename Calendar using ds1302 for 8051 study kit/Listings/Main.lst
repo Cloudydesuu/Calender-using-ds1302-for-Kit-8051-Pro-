@@ -1,0 +1,156 @@
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2024 22:23:52 PAGE 1   
+
+
+C51 COMPILER V9.60.7.0, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\Main.obj
+COMPILER INVOKED BY: D:\C51\BIN\C51.EXE Main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listings\Main.lst) TA
+                    -BS(2) OBJECT(.\Objects\Main.obj)
+
+line level    source
+
+   1          #include <reg51.h>
+   2          #include <math.h>
+   3          #include "ds1302.h"
+   4          
+   5          const unsigned char DIGIT[] = {0x3F, 0x06, 0x5B, 0x4F, 0x66, 0x6D, 0x7D, 0x07, 0x7F, 0x6F};
+   6          
+   7          //Define button pin
+   8          sbit K1 = P3^1;
+   9          sbit K2 = P3^0;
+  10          bit buttonPressed = 0;  // Flag to indicate if the button was pressed
+  11          bit latchState = 0;     // State of the latch (0 or 1)
+  12          
+  13          
+  14          //Define 7-segment PIN
+  15          #define LED P0
+  16          sbit A = P2^2;
+  17          sbit D = P2^3;
+  18          sbit C = P2^4;
+  19          
+  20          
+  21          //Delay func
+  22          void delay(long time) {
+  23   1          while (time--) {;}
+  24   1      }
+  25          
+  26          
+  27          
+  28          //Since ds1302 use BCD, we have to convert it into Decimal
+  29          
+  30          //Hour, min, sec display
+  31          void Display1() {
+  32   1          // Show hour
+  33   1          C = 1; D = 1; A = 1;
+  34   1          LED = DIGIT[hour / 10];
+  35   1          delay(50);
+  36   1          A = 0;
+  37   1          LED = DIGIT[hour % 10];
+  38   1          delay(50);
+  39   1          // '|' split
+  40   1          C = 1; D = 0; A = 1;
+  41   1          LED = 0x5c;
+  42   1          delay(50);
+  43   1          // Show min
+  44   1          C = 1; D = 0; A = 0;
+  45   1          LED = DIGIT[min/ 10];
+  46   1          delay(50);
+  47   1          C = 0; D = 1; A = 1;
+  48   1          LED = DIGIT[min% 10];
+  49   1          delay(50);
+  50   1          // '|' split
+  51   1          A = 0;
+  52   1          LED = 0x5c;
+  53   1          delay(50);
+  54   1          // Show sec
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2024 22:23:52 PAGE 2   
+
+  55   1          C = 0; D = 0; A = 1;
+  56   1          LED = DIGIT[sec / 10];
+  57   1          delay(50);
+  58   1          A = 0;
+  59   1          LED = DIGIT[sec % 10];
+  60   1          delay(50);
+  61   1      }
+  62          
+  63          //Year, month,day display
+  64          void Display2(){
+  65   1          // Show year
+  66   1          C = 1; D = 1; A = 1;
+  67   1          LED = DIGIT[year / 10];
+  68   1          delay(50);
+  69   1          A = 0;
+  70   1          LED = DIGIT[year % 10];
+  71   1          delay(30);
+  72   1          // '|' split
+  73   1          C = 1; D = 0; A = 1;
+  74   1          LED = 0x40;
+  75   1          delay(50);
+  76   1          // Show month
+  77   1          C = 1; D = 0; A = 0;
+  78   1          LED = DIGIT[month/ 10];
+  79   1          delay(50);
+  80   1          C = 0; D = 1; A = 1;
+  81   1          LED = DIGIT[month% 10];
+  82   1          delay(50);
+  83   1          // '|' split
+  84   1          A = 0;
+  85   1          LED = 0x40;
+  86   1          delay(50);
+  87   1          // Show date
+  88   1          C = 0; D = 0; A = 1;
+  89   1          LED = DIGIT[date / 10];
+  90   1          delay(50);
+  91   1          A = 0;
+  92   1          LED = DIGIT[date % 10];
+  93   1          delay(50);
+  94   1      }
+  95          
+  96          
+  97          
+  98          
+  99          // Main 
+ 100          void main() {
+ 101   1          K1 = 1;  // Set button pin as input
+ 102   1          DS1302_SetTime(00,00,11,1,10,24); //11h00m00s 1/10/2024
+ 103   1          //SetCompileTime();
+ 104   1          DS1302_Init();  // Initialize DS1302
+ 105   1      
+ 106   1          while (1) {
+ 107   2              DS1302_GetTime();     // Get time from DS1302
+ 108   2      
+ 109   2              if (K1 == 0) {  // Check if button is pressed
+ 110   3                  delay(5);  // Debounce the button
+ 111   3                  if (K1 == 0 && !buttonPressed) {  // Confirm button press and check if it was not already pres
+             -sed
+ 112   4                      buttonPressed = 1;  // Set button pressed flag
+ 113   4                      latchState = !latchState;  // Toggle latch state
+ 114   4                  }
+ 115   3              } 
+C51 COMPILER V9.60.7.0   MAIN                                                              10/02/2024 22:23:52 PAGE 3   
+
+ 116   2              else {
+ 117   3                  buttonPressed = 0;  // Reset button pressed flag when button is released
+ 118   3              }
+ 119   2      
+ 120   2              if (latchState == 0) {
+ 121   3                  Display1();  // Display time
+ 122   3              } 
+ 123   2              else {
+ 124   3                  Display2(); //Display date
+ 125   3              }
+ 126   2          }
+ 127   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    334    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     10       4
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =      2    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
