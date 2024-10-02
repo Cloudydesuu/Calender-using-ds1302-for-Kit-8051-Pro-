@@ -36,10 +36,10 @@ void Display1() {
     A = 0;
     LED = DIGIT[hour % 10];
     delay(50);
-		// '|' split
-		C = 1; D = 0; A = 1;
-		LED = 0x5c;
-		delay(50);
+	// '|' split
+    C = 1; D = 0; A = 1;
+    LED = 0x5c;
+    delay(50);
     // Show min
     C = 1; D = 0; A = 0;
     LED = DIGIT[min/ 10];
@@ -48,9 +48,9 @@ void Display1() {
     LED = DIGIT[min% 10];
     delay(50);
 		// '|' split
-		A = 0;
-		LED = 0x5c;
-		delay(50);
+    A = 0;
+    LED = 0x5c;
+    delay(50);
     // Show sec
     C = 0; D = 0; A = 1;
     LED = DIGIT[sec / 10];
@@ -69,10 +69,10 @@ void Display2(){
     A = 0;
     LED = DIGIT[year % 10];
     delay(30);
-		// '|' split
-		C = 1; D = 0; A = 1;
-		LED = 0x40;
-		delay(50);
+    // '|' split
+    C = 1; D = 0; A = 1;
+    LED = 0x40;
+    delay(50);
     // Show month
     C = 1; D = 0; A = 0;
     LED = DIGIT[month/ 10];
@@ -80,10 +80,10 @@ void Display2(){
     C = 0; D = 1; A = 1;
     LED = DIGIT[month% 10];
     delay(50);
-		// '|' split
-		A = 0;
-		LED = 0x40;
-		delay(50);
+    // '|' split
+    A = 0;
+    LED = 0x40;
+    delay(50);
     // Show date
     C = 0; D = 0; A = 1;
     LED = DIGIT[date / 10];
@@ -99,8 +99,8 @@ void Display2(){
 // Main 
 void main() {
     K1 = 1;  // Set button pin as input
-		DS1302_SetTime(00,00,11,1,10,24); //11h00m00s 1/10/2024
-		//SetCompileTime();
+    DS1302_SetTime(00,00,11,1,10,24); //11h00m00s 1/10/2024
+    //SetCompileTime();
     DS1302_Init();  // Initialize DS1302
 
     while (1) {
@@ -113,14 +113,14 @@ void main() {
                 latchState = !latchState;  // Toggle latch state
             }
         } 
-				else {
+	    else {
             buttonPressed = 0;  // Reset button pressed flag when button is released
         }
 
         if (latchState == 0) {
             Display1();  // Display time
         } 
-				else {
+	else {
             Display2(); //Display date
         }
     }
